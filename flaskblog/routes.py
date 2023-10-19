@@ -4,7 +4,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import secrets
 import os
 from flaskblog import app, db
-from flaskblog.forms import LoginForm, RegistrationForm, UpdateAccountForm
+from flaskblog.forms import LoginForm, RegistrationForm, UpdateAccountForm, PostForm
 from flaskblog.models import Post, User
 from PIL import Image
 
@@ -107,3 +107,14 @@ def account():
         form.email.data = current_user.email
     img = url_for("static", filename="profile_pics/" + current_user.image_file)
     return render_template("account.html", title="Account", img_file=img, form=form)
+
+
+@app.route("/post/new", methods=["POST", "GET"])
+@login_required
+def new_post():
+    form = PostForm()
+    if form.validate_on_submit():
+        flash("your post has been created", "success")
+        return redirect(url_for("home"))
+
+    return render_template("create_post.html", title="New Post", form=form)
